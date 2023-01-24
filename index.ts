@@ -72,7 +72,7 @@ export class Client {
    * 	// send "123456" to server
    * client.secureInsert("yoursecureChannelId", "123456")
    */
-  public async secureInsert(
+  public async secureChannelInsert(
     secureChannelId: string,
     serverPublicKey: string,
     clientPrivateKey: string,

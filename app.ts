@@ -38,7 +38,7 @@ const protections: Array<{ id: string; data: string }> = [
         client_public_key: publicKey,
         ttl: 1,
       });
-      const token = await client.secureInsert(
+      const token = await client.secureChannelInsert(
         id,
         server_public_key,
         privateKey,
