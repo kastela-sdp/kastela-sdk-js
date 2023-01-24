@@ -1,0 +1,216 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> index.ts</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>index.ts</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import axios, { AxiosInstance, isAxiosError } from "axios";
+import semver from "semver";
+import nacl from "tweetnacl";
+import { encodeBase64, decodeBase64, decodeUTF8 } from "tweetnacl-util";
+
+const expectedKastelaVersion = "v0.0";
+const secureChannelPath = "/api/secure-channel";
+
+/**
+ * @class
+ * Create a new Kastela Client instance for communicating with the server.
+ * Require server information and return client instance.
+ * @param {string} kastelaUrl Kastela server url
+ */
+export class Client {
+  #axiosInstance: AxiosInstance;
+  #kastelaUrl: string;
+
+  public constructor(kastelaUrl: string) {
+    this.#kastelaUrl = kastelaUrl;
+    this.#axiosInstance = axios.create();
+  }
+
+  async #request(method: string, url: URL, body?: any) {
+    try {
+      const { data, headers } = await this.#axiosInstance.request({
+        url: url.toString(),
+        method,
+        data: body,
+      });
+      const actualKastelaVersion = headers["x-kastela-version"]!;
+      if (
+        semver.satisfies(
+          actualKastelaVersion,
+          `${expectedKastelaVersion} || v0.0.0`
+        )
+      ) {
+        return data;
+      } else {
+        throw new Error(
+          `kastela server version mismatch, expected: ${expectedKastelaVersion}.x, actual: ${actualKastelaVersion}`
+        );
+      }
+    } catch (error: any) {
+      const data = error?.response?.data;
+      if (data) {
+        switch (typeof data) {
+          case "object":
+            throw new Error(data.error);
+          default:
+            throw new Error(data);
+        }
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  public generateKeyPair() {
+    const keyPair = nacl.box.keyPair();
+    const publicKey = encodeBase64(keyPair.publicKey);
+    const privateKey = encodeBase64(keyPair.secretKey);
+    return { publicKey, privateKey };
+  }
+
+  /** Send encrypted data to server.
+   * @param {string} secureChannelId
+   * @param {string} serverPublicKey servern public key
+   * @param {any} data data to be sent to the server.
+   * @return {Promise&lt;string>} token that will be stored in the database.
+   * @example
+   * 	// send "123456" to server
+   * client.secureInsert("yoursecureChannelId", "123456")
+   */
+  public async secureInsert(
+    secureChannelId: string,
+    serverPublicKey: string,
+    clientPrivateKey: string,
+    data: any
+  ): Promise&lt;string> {
+    const cliPriv = decodeBase64(clientPrivateKey);
+    const servPub = decodeBase64(serverPublicKey);
+    const plaintext = decodeUTF8(String(data));
+    const nonce = nacl.randomBytes(nacl.box.nonceLength);
+    const ciphertext = nacl.box(plaintext, nonce, servPub, cliPriv);
+    const fulltext = new Uint8Array(nonce.length + ciphertext.length);
+    fulltext.set(nonce);
+    fulltext.set(ciphertext, nonce.length);
+    const { token } = await this.#request(
+      "POST",
+      new URL(
+        `${secureChannelPath}/${secureChannelId}/insert`,
+        this.#kastelaUrl
+      ),
+      fulltext
+    );
+    return token;
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.0</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+
+</body>
+</html>
