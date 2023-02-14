@@ -283,8 +283,8 @@ Require server information and return client instance.</div>
 
 
     
-    <h4 class="name" id="secureChannelInsert">
-        <a class="href-link" href="#secureChannelInsert">#</a>
+    <h4 class="name" id="secureChannelSend">
+        <a class="href-link" href="#secureChannelSend">#</a>
         
             
                 <span class='tag'>async</span>
@@ -292,7 +292,7 @@ Require server information and return client instance.</div>
         
         <span class="code-name">
             
-                secureChannelInsert<span class="signature">(secureChannelId, serverPublicKey, data)</span><span class="type-signature"> &rarr; {Promise.&lt;string>}</span>
+                secureChannelSend<span class="signature">(protectionId, data)</span><span class="type-signature"> &rarr; {Promise.&lt;{id: string, token: string}>}</span>
             
         </span>
     </h4>
@@ -339,7 +339,7 @@ Require server information and return client instance.</div>
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>secureChannelId</code></td>
+      <td class="name"><code>protectionId</code></td>
   
 
   <td class="type">
@@ -355,32 +355,7 @@ Require server information and return client instance.</div>
 
   
 
-  <td class="description last"></td>
-</tr>
-
-
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>serverPublicKey</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last">servern public key</td>
+  <td class="description last">protection id</td>
 </tr>
 
 
@@ -453,7 +428,7 @@ Require server information and return client instance.</div>
         <p class="tag-source">
             <a href="index.ts.html" class="button">View Source</a>
             <span>
-                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line99">line 99</a>
+                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line98">line 98</a>
             </span>
         </p>
     
@@ -484,13 +459,13 @@ Require server information and return client instance.</div>
 
 <div class="columns">
     
-    <div class='param-desc column is-7'>token that will be stored in the database.</div>
+    <div class='param-desc column is-7'>secure channel id and token that will be stored in the database.</div>
     
     
     <div class='column is-5 has-text-left'>
         <label>Type: </label>
         
-<code class="param-type">Promise.&lt;string></code>
+<code class="param-type">Promise.&lt;{id: string, token: string}></code>
 
 
     </div>
@@ -508,7 +483,7 @@ Require server information and return client instance.</div>
     
     
         <pre class="prettyprint"><code>// send "123456" to server
-client.secureInsert("yoursecureChannelId", "123456")</code></pre>
+client.secureInsert("yourProtectionId", "123456")</code></pre>
     
 
 
