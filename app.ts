@@ -3,9 +3,9 @@ import axios from "axios";
 import { request, gql } from "graphql-request";
 
 const kastelaUrl = "http://server1.kastela.duckdns.org:3201";
-const serverUrl = "http://127.0.0.1:4000";
+const serverUrl = "https://backend1.kastela.duckdns.org";
 
-const client = new Client(kastelaUrl);
+const client = new Client(kastelaUrl, serverUrl);
 
 const protections: Array<{ id: string; data: string }> = [
   {
@@ -27,35 +27,18 @@ const protections: Array<{ id: string; data: string }> = [
 ];
 
 (async () => {
-  console.log(1);
   const secureChannels = await Promise.all(
-    protections.map(async (protection) => {
-      const { publicKey, privateKey } = client.generateKeyPair();
-      const {
-        data: { id, server_public_key },
-      } = await axios.post(`${serverUrl}/api/secure-channel/begin`, {
-        protection_id: protection.id,
-        client_public_key: publicKey,
-        ttl: 1,
-      });
-      const token = await client.secureChannelInsert(
-        id,
-        server_public_key,
-        privateKey,
-        protection.data
-      );
-      return { id, token };
-    })
+    protections.map((protection) =>
+      client.secureChannelSend(protection.id, protection.data)
+    )
   );
-  console.log(2);
   const query = gql`
-    mutation storeUserSecure($data: UserStoreData!) {
+    mutation storeUserSecure($data: UserStoreInput!) {
       store_user_secure(data: $data) {
         id
       }
     }
   `;
-  console.log(3);
   const variables = {
     data: {
       id: 100,
@@ -67,12 +50,11 @@ const protections: Array<{ id: string; data: string }> = [
     },
   };
   console.log("data", variables.data);
-  await request("http://127.0.0.1:4000/graphql", query, variables);
+  await request(`${serverUrl}/graphql`, query, variables);
   await Promise.all(
-    secureChannels.map((result) =>
-      axios.post(`${serverUrl}/api/secure-channel/${result.id}/commit`)
+    secureChannels.map((secureChannel) =>
+      axios.post(`${serverUrl}/api/secure-channel/${secureChannel.id}/commit`)
     )
   );
-  console.log(4);
   console.log("OK");
 })();
