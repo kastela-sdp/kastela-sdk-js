@@ -15,9 +15,11 @@ const secureChannelPath = "/api/secure-channel";
 export class Client {
   #axiosInstance: AxiosInstance;
   #kastelaUrl: string;
+  #serverUrl: string;
 
-  public constructor(kastelaUrl: string) {
+  public constructor(kastelaUrl: string, serverUrl: string) {
     this.#kastelaUrl = kastelaUrl;
+    this.#serverUrl = serverUrl;
     this.#axiosInstance = axios.create();
   }
 
@@ -56,44 +58,44 @@ export class Client {
     }
   }
 
-  public generateKeyPair() {
-    const keyPair = nacl.box.keyPair();
-    const publicKey = encodeBase64(keyPair.publicKey);
-    const privateKey = encodeBase64(keyPair.secretKey);
-    return { publicKey, privateKey };
-  }
-
   /** Send encrypted data to server.
-   * @param {string} secureChannelId
-   * @param {string} serverPublicKey servern public key
+   * @param {string} protectionId protection id
    * @param {any} data data to be sent to the server.
-   * @return {Promise<string>} token that will be stored in the database.
+   * @return {Promise<{id: string, token: string}>} secure channel id and token that will be stored in the database.
    * @example
    * 	// send "123456" to server
-   * client.secureInsert("yoursecureChannelId", "123456")
+   * client.secureInsert("yourProtectionId", "123456")
    */
-  public async secureChannelInsert(
-    secureChannelId: string,
-    serverPublicKey: string,
-    clientPrivateKey: string,
+  public async secureChannelSend(
+    protectionId: string,
     data: any
-  ): Promise<string> {
-    const cliPriv = decodeBase64(clientPrivateKey);
-    const servPub = decodeBase64(serverPublicKey);
+  ): Promise<{ id: string; token: string }> {
+    const { publicKey: clientPublicKey, secretKey: clientPrivateKey } =
+      nacl.box.keyPair();
+    const {
+      data: { id, server_public_key },
+    } = await axios.post(`${this.#serverUrl}/api/secure-channel/begin`, {
+      protection_id: protectionId,
+      client_public_key: encodeBase64(clientPublicKey),
+      ttl: 1,
+    });
     const plaintext = decodeUTF8(String(data));
     const nonce = nacl.randomBytes(nacl.box.nonceLength);
-    const ciphertext = nacl.box(plaintext, nonce, servPub, cliPriv);
+    const serverPublicKey = decodeBase64(server_public_key);
+    const ciphertext = nacl.box(
+      plaintext,
+      nonce,
+      serverPublicKey,
+      clientPrivateKey
+    );
     const fulltext = new Uint8Array(nonce.length + ciphertext.length);
     fulltext.set(nonce);
     fulltext.set(ciphertext, nonce.length);
     const { token } = await this.#request(
       "POST",
-      new URL(
-        `${secureChannelPath}/${secureChannelId}/insert`,
-        this.#kastelaUrl
-      ),
+      new URL(`${secureChannelPath}/${id}/insert`, this.#kastelaUrl),
       fulltext
     );
-    return token;
+    return { id, token };
   }
 }
