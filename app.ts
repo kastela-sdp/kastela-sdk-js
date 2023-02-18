@@ -2,10 +2,10 @@ import { Client } from "./index";
 import axios from "axios";
 import { request, gql } from "graphql-request";
 
-const kastelaUrl = "http://server1.kastela.duckdns.org:3201";
-const serverUrl = "https://backend1.kastela.duckdns.org";
+const kastelaUrl = "http://127.0.0.1:3200";
+const backendUrl = "http://127.0.0.1:4000";
 
-const client = new Client(kastelaUrl, serverUrl);
+const client = new Client(kastelaUrl, backendUrl);
 
 const protections: Array<{ id: string; data: string }> = [
   {
@@ -28,9 +28,15 @@ const protections: Array<{ id: string; data: string }> = [
 
 (async () => {
   const secureChannels = await Promise.all(
-    protections.map((protection) =>
-      client.secureChannelSend(protection.id, protection.data)
-    )
+    protections.map(async (protection) => {
+      const {
+        data: { credential },
+      } = await axios.post(`${backendUrl}/api/secure-channel/init`, {
+        protection_id: protection.id,
+        ttl: 1,
+      });
+      return await client.secureChannelSend(credential, protection.data);
+    })
   );
   const query = gql`
     mutation storeUserSecure($data: UserStoreInput!) {
@@ -50,10 +56,12 @@ const protections: Array<{ id: string; data: string }> = [
     },
   };
   console.log("data", variables.data);
-  await request(`${serverUrl}/graphql`, query, variables);
+  await request(`${backendUrl}/graphql`, query, variables);
   await Promise.all(
     secureChannels.map((secureChannel) =>
-      axios.post(`${serverUrl}/api/secure-channel/${secureChannel.id}/commit`)
+      axios.post(`${backendUrl}/api/secure-channel/commit`, {
+        id: secureChannel.id,
+      })
     )
   );
   console.log("OK");
