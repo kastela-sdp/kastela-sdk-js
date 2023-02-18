@@ -15,11 +15,9 @@ const secureChannelPath = "/api/secure-channel";
 export class Client {
   #axiosInstance: AxiosInstance;
   #kastelaUrl: string;
-  #serverUrl: string;
 
-  public constructor(kastelaUrl: string, serverUrl: string) {
+  public constructor(kastelaUrl: string) {
     this.#kastelaUrl = kastelaUrl;
-    this.#serverUrl = serverUrl;
     this.#axiosInstance = axios.create();
   }
 
