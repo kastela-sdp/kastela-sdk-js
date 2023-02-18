@@ -292,7 +292,7 @@ Require server information and return client instance.</div>
         
         <span class="code-name">
             
-                secureChannelSend<span class="signature">(protectionId, data)</span><span class="type-signature"> &rarr; {Promise.&lt;{id: string, token: string}>}</span>
+                secureChannelSend<span class="signature">(credential, data)</span><span class="type-signature"> &rarr; {Promise.&lt;{id: string, token: string}>}</span>
             
         </span>
     </h4>
@@ -339,7 +339,7 @@ Require server information and return client instance.</div>
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>protectionId</code></td>
+      <td class="name"><code>credential</code></td>
   
 
   <td class="type">
@@ -355,7 +355,7 @@ Require server information and return client instance.</div>
 
   
 
-  <td class="description last">protection id</td>
+  <td class="description last">secure channel credential</td>
 </tr>
 
 
@@ -428,7 +428,7 @@ Require server information and return client instance.</div>
         <p class="tag-source">
             <a href="index.ts.html" class="button">View Source</a>
             <span>
-                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line98">line 98</a>
+                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line97">line 97</a>
             </span>
         </p>
     
@@ -483,7 +483,7 @@ Require server information and return client instance.</div>
     
     
         <pre class="prettyprint"><code>// send "123456" to server
-client.secureInsert("yourProtectionId", "123456")</code></pre>
+client.secureChannelSend("yourCredential", "123456")</code></pre>
     
 
 
