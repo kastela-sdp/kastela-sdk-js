@@ -5,7 +5,7 @@ import { request, gql } from "graphql-request";
 const kastelaUrl = "http://127.0.0.1:3200";
 const backendUrl = "http://127.0.0.1:4000";
 
-const client = new Client(kastelaUrl, backendUrl);
+const client = new Client(kastelaUrl);
 
 const protections: Array<{ id: string; data: string }> = [
   {
