@@ -19,6 +19,15 @@ export class Client {
   public constructor(kastelaUrl: string) {
     this.#kastelaUrl = kastelaUrl;
     this.#axiosInstance = axios.create();
+    this.#axiosInstance.interceptors.response.use((response) => {
+      response.headers = Object.fromEntries(
+        Object.entries(response.headers).map(([k, v]) => [
+          k.toLowerCase(),
+          v as string,
+        ])
+      );
+      return response;
+    });
   }
 
   async #request(method: string, url: URL, body?: any) {
