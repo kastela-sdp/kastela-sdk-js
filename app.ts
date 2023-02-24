@@ -39,8 +39,8 @@ const protections: Array<{ id: string; data: [string] }> = [
     protections.map((protection) => protection.data)
   );
   const query = gql`
-    mutation storeUserSecure($data: UserStoreInput!) {
-      store_user_secure(data: $data) {
+    mutation storeUserSecure($data: UserStoreInput!, $credential: String!) {
+      store_user_secure(data: $data, credential: $credential) {
         id
       }
     }
@@ -54,11 +54,9 @@ const protections: Array<{ id: string; data: [string] }> = [
       credit_card: tokens[2][0],
       phone: tokens[3][0],
     },
+    credential,
   };
   console.log("data", variables.data);
   await request(`${backendUrl}/graphql`, query, variables);
-  axios.post(`${backendUrl}/api/secure-channel/commit`, {
-    credential,
-  });
   console.log("OK");
 })();
