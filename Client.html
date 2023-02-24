@@ -292,7 +292,7 @@ Require server information and return client instance.</div>
         
         <span class="code-name">
             
-                secureChannelSend<span class="signature">(credential, data)</span><span class="type-signature"> &rarr; {Promise.&lt;{id: string, token: string}>}</span>
+                secureChannelSend<span class="signature">(credential, data)</span><span class="type-signature"> &rarr; {Promise.&lt;{tokens: Array.&lt;Array.&lt;string>>}>}</span>
             
         </span>
     </h4>
@@ -370,7 +370,7 @@ Require server information and return client instance.</div>
   <td class="type">
   
       
-<code class="param-type">any</code>
+<code class="param-type">Array.&lt;Array.&lt;any>></code>
 
 
   
@@ -380,7 +380,7 @@ Require server information and return client instance.</div>
 
   
 
-  <td class="description last">data to be sent to the server.</td>
+  <td class="description last">data to be sent to the server. the sequence of data match the protection_id sequence on init</td>
 </tr>
 
 
@@ -428,7 +428,7 @@ Require server information and return client instance.</div>
         <p class="tag-source">
             <a href="index.ts.html" class="button">View Source</a>
             <span>
-                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line102">line 102</a>
+                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line105">line 105</a>
             </span>
         </p>
     
@@ -459,13 +459,13 @@ Require server information and return client instance.</div>
 
 <div class="columns">
     
-    <div class='param-desc column is-7'>secure channel id and token that will be stored in the database.</div>
+    <div class='param-desc column is-7'>token that will be stored in the database. the tokens sequence corresponds to the data sequence</div>
     
     
     <div class='column is-5 has-text-left'>
         <label>Type: </label>
         
-<code class="param-type">Promise.&lt;{id: string, token: string}></code>
+<code class="param-type">Promise.&lt;{tokens: Array.&lt;Array.&lt;string>>}></code>
 
 
     </div>
@@ -482,8 +482,8 @@ Require server information and return client instance.</div>
     <h5>Example</h5>
     
     
-        <pre class="prettyprint"><code>// send "123456" to server
-client.secureChannelSend("yourCredential", "123456")</code></pre>
+        <pre class="prettyprint"><code>// send "123","456","789" to server
+client.secureChannelSend("yourCredential", [["123","456"],["789"]])</code></pre>
     
 
 

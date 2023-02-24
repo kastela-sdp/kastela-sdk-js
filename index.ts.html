@@ -154,19 +154,19 @@ export class Client {
 
   /** Send encrypted data to server.
    * @param {string} credential secure channel credential
-   * @param {any} data data to be sent to the server.
-   * @return {Promise&lt;{id: string, token: string}>} secure channel id and token that will be stored in the database.
+   * @param {any[][]} data data to be sent to the server. the sequence of data match the protection_id sequence on init
+   * @return {Promise&lt;{tokens: string[][]}>} token that will be stored in the database. the tokens sequence corresponds to the data sequence
    * @example
-   * 	// send "123456" to server
-   * client.secureChannelSend("yourCredential", "123456")
+   * 	// send "123","456","789" to server
+   * client.secureChannelSend("yourCredential", [["123","456"],["789"]])
    */
   public async secureChannelSend(
     credential: string,
-    data: any
-  ): Promise&lt;{ id: string; token: string }> {
+    data: any[][]
+  ): Promise&lt;{ tokens: string[][] }> {
     const { publicKey: clientPublicKey, secretKey: clientPrivateKey } =
       nacl.box.keyPair();
-    const { id, server_public_key } = await this.#request(
+    const { server_public_key } = await this.#request(
       "POST",
       new URL(`${secureChannelPath}/begin`, this.#kastelaUrl),
       {
@@ -174,24 +174,29 @@ export class Client {
         client_public_key: encodeBase64(clientPublicKey),
       }
     );
-    const plaintext = decodeUTF8(String(data));
-    const nonce = nacl.randomBytes(nacl.box.nonceLength);
-    const serverPublicKey = decodeBase64(server_public_key);
-    const ciphertext = nacl.box(
-      plaintext,
-      nonce,
-      serverPublicKey,
-      clientPrivateKey
+    const fulltexts = data.map((values) =>
+      values.map((value) => {
+        const plaintext = decodeUTF8(String(value));
+        const nonce = nacl.randomBytes(nacl.box.nonceLength);
+        const serverPublicKey = decodeBase64(server_public_key);
+        const ciphertext = nacl.box(
+          plaintext,
+          nonce,
+          serverPublicKey,
+          clientPrivateKey
+        );
+        const fulltext = new Uint8Array(nonce.length + ciphertext.length);
+        fulltext.set(nonce);
+        fulltext.set(ciphertext, nonce.length);
+        return encodeBase64(fulltext);
+      })
     );
-    const fulltext = new Uint8Array(nonce.length + ciphertext.length);
-    fulltext.set(nonce);
-    fulltext.set(ciphertext, nonce.length);
-    const { token } = await this.#request(
+    const { tokens } = await this.#request(
       "POST",
       new URL(`${secureChannelPath}/insert`, this.#kastelaUrl),
-      { credential, data: encodeBase64(fulltext) }
+      { credential, data: fulltexts }
     );
-    return { id, token };
+    return { tokens };
   }
 }
 </code></pre>
