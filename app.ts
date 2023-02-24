@@ -7,36 +7,36 @@ const backendUrl = "http://127.0.0.1:4000";
 
 const client = new Client(kastelaUrl);
 
-const protections: Array<{ id: string; data: string }> = [
+const protections: Array<{ id: string; data: [string] }> = [
   {
     id: "5f77f9c2-2800-4661-b479-a0791aa0eacc",
-    data: "disyam@hash.id",
+    data: ["disyam@hash.id"],
   },
   {
     id: "6980a205-db7a-4b8e-bfce-551709034cc3",
-    data: "INDONESIA",
+    data: ["INDONESIA"],
   },
   {
     id: "963d8305-f68c-4f9a-b6b4-d568fc3d8f78",
-    data: "1234123412341234",
+    data: ["1234123412341234"],
   },
   {
     id: "0c392d3c-4ec0-4e11-a5bc-d6e094c21ea0",
-    data: "123-466-7890",
+    data: ["123-466-7890"],
   },
 ];
 
 (async () => {
-  const secureChannels = await Promise.all(
-    protections.map(async (protection) => {
-      const {
-        data: { credential },
-      } = await axios.post(`${backendUrl}/api/secure-channel/init`, {
-        protection_id: protection.id,
-        ttl: 1,
-      });
-      return await client.secureChannelSend(credential, protection.data);
-    })
+  const {
+    data: { credential },
+  } = await axios.post(`${backendUrl}/api/secure-channel/init`, {
+    operation: "WRITE",
+    protection_ids: protections.map((protection) => protection.id),
+    ttl: 1,
+  });
+  const { tokens } = await client.secureChannelSend(
+    credential,
+    protections.map((protection) => protection.data)
   );
   const query = gql`
     mutation storeUserSecure($data: UserStoreInput!) {
@@ -49,20 +49,16 @@ const protections: Array<{ id: string; data: string }> = [
     data: {
       id: 100,
       name: "Disyam Adityana",
-      email: secureChannels[0].token,
-      country: secureChannels[1].token,
-      credit_card: secureChannels[2].token,
-      phone: secureChannels[3].token,
+      email: tokens[0][0],
+      country: tokens[1][0],
+      credit_card: tokens[2][0],
+      phone: tokens[3][0],
     },
   };
   console.log("data", variables.data);
   await request(`${backendUrl}/graphql`, query, variables);
-  await Promise.all(
-    secureChannels.map((secureChannel) =>
-      axios.post(`${backendUrl}/api/secure-channel/commit`, {
-        id: secureChannel.id,
-      })
-    )
-  );
+  axios.post(`${backendUrl}/api/secure-channel/commit`, {
+    credential,
+  });
   console.log("OK");
 })();
