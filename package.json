@@ -1,6 +1,6 @@
 {
   "name": "@kastela-sdp/kastela-sdk-js",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "description": "Kastela Client SDK for Javascript",
   "main": "index.js",
   "scripts": {
