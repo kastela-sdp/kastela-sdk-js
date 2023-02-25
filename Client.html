@@ -219,7 +219,7 @@ Require server information and return client instance.</div>
         <p class="tag-source">
             <a href="index.ts.html" class="button">View Source</a>
             <span>
-                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line14">line 14</a>
+                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line13">line 13</a>
             </span>
         </p>
     
@@ -283,8 +283,8 @@ Require server information and return client instance.</div>
 
 
     
-    <h4 class="name" id="secureChannelSend">
-        <a class="href-link" href="#secureChannelSend">#</a>
+    <h4 class="name" id="secureProtectionSend">
+        <a class="href-link" href="#secureProtectionSend">#</a>
         
             
                 <span class='tag'>async</span>
@@ -292,7 +292,7 @@ Require server information and return client instance.</div>
         
         <span class="code-name">
             
-                secureChannelSend<span class="signature">(credential, data)</span><span class="type-signature"> &rarr; {Promise.&lt;{tokens: Array.&lt;Array.&lt;string>>}>}</span>
+                secureProtectionSend<span class="signature">(credential, data)</span><span class="type-signature"> &rarr; {Promise.&lt;{tokens: Array.&lt;Array.&lt;string>>}>}</span>
             
         </span>
     </h4>
@@ -301,7 +301,7 @@ Require server information and return client instance.</div>
     
     
     <div class="description">
-        Send encrypted data to server.
+        Send encrypted protection data to server.
     </div>
     
 
@@ -355,7 +355,7 @@ Require server information and return client instance.</div>
 
   
 
-  <td class="description last">secure channel credential</td>
+  <td class="description last">secure protection credential</td>
 </tr>
 
 
@@ -380,7 +380,7 @@ Require server information and return client instance.</div>
 
   
 
-  <td class="description last">data to be sent to the server. the sequence of data match the protection_id sequence on init</td>
+  <td class="description last">protection data to be sent to the server. the sequence of data match the protection_id sequence on init</td>
 </tr>
 
 
@@ -428,7 +428,7 @@ Require server information and return client instance.</div>
         <p class="tag-source">
             <a href="index.ts.html" class="button">View Source</a>
             <span>
-                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line105">line 105</a>
+                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line103">line 103</a>
             </span>
         </p>
     
@@ -483,7 +483,7 @@ Require server information and return client instance.</div>
     
     
         <pre class="prettyprint"><code>// send "123","456","789" to server
-client.secureChannelSend("yourCredential", [["123","456"],["789"]])</code></pre>
+client.secureProtectionSend("yourCredential", [["123","456"],["789"]])</code></pre>
     
 
 
