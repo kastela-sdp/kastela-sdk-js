@@ -4,7 +4,6 @@ import nacl from "tweetnacl";
 import { encodeBase64, decodeBase64, decodeUTF8 } from "tweetnacl-util";
 
 const expectedKastelaVersion = "v0.2";
-const secureChannelPath = "/api/secure-channel";
 
 /**
  * @class
@@ -65,15 +64,15 @@ export class Client {
     }
   }
 
-  /** Send encrypted data to server.
-   * @param {string} credential secure channel credential
-   * @param {any[][]} data data to be sent to the server. the sequence of data match the protection_id sequence on init
+  /** Send encrypted protection data to server.
+   * @param {string} credential secure protection credential
+   * @param {any[][]} data protection data to be sent to the server. the sequence of data match the protection_id sequence on init
    * @return {Promise<{tokens: string[][]}>} token that will be stored in the database. the tokens sequence corresponds to the data sequence
    * @example
    * 	// send "123","456","789" to server
-   * client.secureChannelSend("yourCredential", [["123","456"],["789"]])
+   * client.secureProtectionSend("yourCredential", [["123","456"],["789"]])
    */
-  public async secureChannelSend(
+  public async secureProtectionSend(
     credential: string,
     data: any[][]
   ): Promise<{ tokens: string[][] }> {
@@ -81,7 +80,7 @@ export class Client {
       nacl.box.keyPair();
     const { server_public_key } = await this.#request(
       "POST",
-      new URL(`${secureChannelPath}/begin`, this.#kastelaUrl),
+      new URL("/api/secure/protection/begin", this.#kastelaUrl),
       {
         credential,
         client_public_key: encodeBase64(clientPublicKey),
@@ -106,7 +105,7 @@ export class Client {
     );
     const { tokens } = await this.#request(
       "POST",
-      new URL(`${secureChannelPath}/insert`, this.#kastelaUrl),
+      new URL("/api/secure/protection/insert", this.#kastelaUrl),
       { credential, data: fulltexts }
     );
     return { tokens };
