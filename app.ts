@@ -2,8 +2,8 @@ import { Client } from "./index";
 import axios from "axios";
 import { request, gql } from "graphql-request";
 
-const kastelaUrl = "http://127.0.0.1:3200";
-const backendUrl = "http://127.0.0.1:4000";
+const kastelaUrl = "http://server1.kastela.duckdns.org:3201";
+const backendUrl = "https://backend1.kastela.duckdns.org";
 
 const client = new Client(kastelaUrl);
 
@@ -22,19 +22,19 @@ const protections: Array<{ id: string; data: [string] }> = [
   },
   {
     id: "0c392d3c-4ec0-4e11-a5bc-d6e094c21ea0",
-    data: ["123-466-7890"],
+    data: ["123-456-7890"],
   },
 ];
 
 (async () => {
   const {
     data: { credential },
-  } = await axios.post(`${backendUrl}/api/secure-channel/init`, {
+  } = await axios.post(`${backendUrl}/api/secure/protection/init`, {
     operation: "WRITE",
     protection_ids: protections.map((protection) => protection.id),
     ttl: 1,
   });
-  const { tokens } = await client.secureChannelSend(
+  const { tokens } = await client.secureProtectionSend(
     credential,
     protections.map((protection) => protection.data)
   );
