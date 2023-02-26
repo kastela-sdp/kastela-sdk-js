@@ -2,8 +2,8 @@ import { Client } from "./index";
 import axios from "axios";
 import { request, gql } from "graphql-request";
 
-const kastelaUrl = "http://server1.kastela.duckdns.org:3201";
-const backendUrl = "https://backend1.kastela.duckdns.org";
+const kastelaUrl = "http://127.0.0.1:3200";
+const backendUrl = "http://127.0.0.1:4000";
 
 const client = new Client(kastelaUrl);
 
@@ -26,7 +26,7 @@ const protections: Array<{ id: string; data: [string] }> = [
   },
 ];
 
-(async () => {
+async function store() {
   const {
     data: { credential },
   } = await axios.post(`${backendUrl}/api/secure/protection/init`, {
@@ -39,7 +39,7 @@ const protections: Array<{ id: string; data: [string] }> = [
     protections.map((protection) => protection.data)
   );
   const query = gql`
-    mutation storeUserSecure($data: UserStoreInput!, $credential: String!) {
+    mutation store_user_secure($data: UserStoreInput!, $credential: String!) {
       store_user_secure(data: $data, credential: $credential) {
         id
       }
@@ -56,7 +56,64 @@ const protections: Array<{ id: string; data: [string] }> = [
     },
     credential,
   };
-  console.log("data", variables.data);
+  console.log("store input", variables.data);
   await request(`${backendUrl}/graphql`, query, variables);
-  console.log("OK");
+}
+
+async function update() {
+  const {
+    data: { credential },
+  } = await axios.post(`${backendUrl}/api/secure/protection/init`, {
+    operation: "WRITE",
+    protection_ids: [protections[0].id],
+    ttl: 1,
+  });
+  const { tokens } = await client.secureProtectionSend(credential, [
+    ["disyam.adityana@gmail.com"],
+  ]);
+  const query = gql`
+    mutation update_user_secure(
+      $id: Int!
+      $data: UserUpdateInput!
+      $credential: String!
+    ) {
+      update_user_secure(id: $id, data: $data, credential: $credential)
+    }
+  `;
+  const variables = {
+    id: 100,
+    data: { email: tokens[0][0] },
+    credential,
+  };
+  console.log("update input", variables.data);
+  await request(`${backendUrl}/graphql`, query, variables);
+}
+
+async function get() {
+  const query = gql`
+    query get_user($id: Int!) {
+      get_user(id: $id) {
+        id
+        email
+        country
+        credit_card
+        phone
+      }
+    }
+  `;
+  const variables = {
+    id: 100,
+  };
+  const { get_user: data } = await request(
+    `${backendUrl}/graphql`,
+    query,
+    variables
+  );
+  console.log("get data", data);
+}
+
+(async () => {
+  await store();
+  await update();
+  await get();
 })();
