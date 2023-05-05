@@ -219,7 +219,7 @@ Require server information and return client instance.</div>
         <p class="tag-source">
             <a href="index.ts.html" class="button">View Source</a>
             <span>
-                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line13">line 13</a>
+                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line11">line 11</a>
             </span>
         </p>
     
@@ -283,6 +283,216 @@ Require server information and return client instance.</div>
 
 
     
+    <h4 class="name" id="secureProtectionReceive">
+        <a class="href-link" href="#secureProtectionReceive">#</a>
+        
+            
+                <span class='tag'>async</span>
+            
+        
+        <span class="code-name">
+            
+                secureProtectionReceive<span class="signature">(credential, tokens)</span><span class="type-signature"> &rarr; {Promise.&lt;{values: Array.&lt;Array.&lt;any>>}>}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Receive encrypted protection data from server.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>credential</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">secure protection credential</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>tokens</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">Array.&lt;Array.&lt;string>></code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">token to be sent to the server. the sequence of token match the protection_id sequence on init</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="index.ts.html" class="button">View Source</a>
+            <span>
+                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line194">line 194</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'>token that will be stored in the database. the tokens sequence corresponds to the data sequence</div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<code class="param-type">Promise.&lt;{values: Array.&lt;Array.&lt;any>>}></code>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+    <h5>Example</h5>
+    
+    
+        <pre class="prettyprint"><code>// send "123","456","789" to server
+client.secureProtectionReceive("yourCredential", [["foo","bar"],["baz"]])</code></pre>
+    
+
+
+</div>
+            
+                <div class="member">
+
+
+    
     <h4 class="name" id="secureProtectionSend">
         <a class="href-link" href="#secureProtectionSend">#</a>
         
@@ -292,7 +502,7 @@ Require server information and return client instance.</div>
         
         <span class="code-name">
             
-                secureProtectionSend<span class="signature">(credential, data)</span><span class="type-signature"> &rarr; {Promise.&lt;{tokens: Array.&lt;Array.&lt;string>>}>}</span>
+                secureProtectionSend<span class="signature">(credential, values)</span><span class="type-signature"> &rarr; {Promise.&lt;{tokens: Array.&lt;Array.&lt;string>>}>}</span>
             
         </span>
     </h4>
@@ -364,7 +574,7 @@ Require server information and return client instance.</div>
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>data</code></td>
+      <td class="name"><code>values</code></td>
   
 
   <td class="type">
@@ -428,7 +638,7 @@ Require server information and return client instance.</div>
         <p class="tag-source">
             <a href="index.ts.html" class="button">View Source</a>
             <span>
-                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line103">line 103</a>
+                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line182">line 182</a>
             </span>
         </p>
     
@@ -484,6 +694,426 @@ Require server information and return client instance.</div>
     
         <pre class="prettyprint"><code>// send "123","456","789" to server
 client.secureProtectionSend("yourCredential", [["123","456"],["789"]])</code></pre>
+    
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="secureVaultReceive">
+        <a class="href-link" href="#secureVaultReceive">#</a>
+        
+            
+                <span class='tag'>async</span>
+            
+        
+        <span class="code-name">
+            
+                secureVaultReceive<span class="signature">(credential, tokens)</span><span class="type-signature"> &rarr; {Promise.&lt;{values: Array.&lt;Array.&lt;any>>}>}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Receive encrypted vault data from server.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>credential</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">secure vault credential</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>tokens</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">Array.&lt;Array.&lt;string>></code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">token to be sent to the server. the sequence of token match the vault_id sequence on init</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="index.ts.html" class="button">View Source</a>
+            <span>
+                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line218">line 218</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'>token that will be stored in the database. the tokens sequence corresponds to the data sequence</div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<code class="param-type">Promise.&lt;{values: Array.&lt;Array.&lt;any>>}></code>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+    <h5>Example</h5>
+    
+    
+        <pre class="prettyprint"><code>// send "123","456","789" to server
+client.secureVaultReceive("yourCredential", [["foo","bar"],["baz"]])</code></pre>
+    
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="secureVaultSend">
+        <a class="href-link" href="#secureVaultSend">#</a>
+        
+            
+                <span class='tag'>async</span>
+            
+        
+        <span class="code-name">
+            
+                secureVaultSend<span class="signature">(credential, values)</span><span class="type-signature"> &rarr; {Promise.&lt;{tokens: Array.&lt;Array.&lt;string>>}>}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Send encrypted vault data to server.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>credential</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">secure vault credential</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>values</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">Array.&lt;Array.&lt;any>></code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">vault data to be sent to the server. the sequence of data match the vault_id sequence on init</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="index.ts.html" class="button">View Source</a>
+            <span>
+                <a href="index.ts.html">index.ts</a>, <a href="index.ts.html#line206">line 206</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'>token that will be stored in the database. the tokens sequence corresponds to the data sequence</div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<code class="param-type">Promise.&lt;{tokens: Array.&lt;Array.&lt;string>>}></code>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+    <h5>Example</h5>
+    
+    
+        <pre class="prettyprint"><code>// send "123","456","789" to server
+client.securevaultSend("yourCredential", [["123","456"],["789"]])</code></pre>
     
 
 
